@@ -189,7 +189,11 @@ module Spree
       end
 
       def add_variant_to_order(order)
-        order.contents.add(variant, quantity)
+        Spree::Cart::AddItem.call(
+          order: order,
+          variant: variant,
+          quantity: quantity
+        )
         order.next
       end
 
@@ -236,7 +240,7 @@ module Spree
       def order_attributes
         {
           currency: parent_order.currency,
-          guest_token: parent_order.guest_token,
+          token: parent_order.token,
           store: parent_order.store,
           user: parent_order.user,
           created_by: parent_order.user,
