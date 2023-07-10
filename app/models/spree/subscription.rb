@@ -1,6 +1,5 @@
 module Spree
   class Subscription < Spree::Base
-
     attr_accessor :cancelled
 
     include Spree::Core::NumberGenerator.new(prefix: 'S')
@@ -16,7 +15,7 @@ module Spree
     belongs_to :ship_address, class_name: "Spree::Address"
     belongs_to :bill_address, class_name: "Spree::Address"
     belongs_to :parent_order, class_name: "Spree::Order"
-    belongs_to :variant, inverse_of: :subscriptions
+    belongs_to :variant
     belongs_to :frequency, foreign_key: :subscription_frequency_id, class_name: "Spree::SubscriptionFrequency"
     belongs_to :source, polymorphic: true
 
