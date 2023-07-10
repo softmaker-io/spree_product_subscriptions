@@ -1,7 +1,7 @@
 Deface::Override.new(
   virtual_path: "spree/orders/_line_item",
   name: "add_subscribed_field_to_cart_listing",
-  insert_bottom: ".line-item",
+  insert_bottom: "#line-items",
   partial: "spree/orders/subscription_field"
 )
 
@@ -13,8 +13,8 @@ Deface::Override.new(
 )
 
 Deface::Override.new(
-  virtual_path: "spree/orders/_form",
+  virtual_path: "spree/orders/edit",
   name: "edit_footer_in_cart_listing",
-  insert_bottom: ".cart-total",
+  insert_bottom: ".shopping-cart-total",
   partial: "spree/orders/cart_subscription_footer"
 )

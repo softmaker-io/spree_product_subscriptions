@@ -1,6 +1,6 @@
-<div class='field checkbox'>
-  <label>
+<div class="col-12 col-lg-6">
+  <div class="form-group">
     <%= f.check_box :is_subscribable_eq, { :checked => params[:q][:is_subscribable_eq] == '1' }, '1', nil %>
     <%= Spree.t(:show_subscribable ) %>
-  </label>
+  </div>
 </div>
