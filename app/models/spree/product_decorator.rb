@@ -15,3 +15,5 @@ module Spree
     end
   end
 end
+
+::Spree::Product.prepend Spree::ProductDecorator
