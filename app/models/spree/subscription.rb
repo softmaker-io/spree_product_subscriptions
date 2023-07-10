@@ -27,6 +27,7 @@ module Spree
 
     self.whitelisted_ransackable_associations = %w( parent_order )
 
+    scope :with_user, -> (user_id_value) { joins(:parent_order).where(parent_order: { user_id: user_id_value }) if user_id_value.present? }
     scope :paused, -> { where(paused: true) }
     scope :unpaused, -> { where(paused: false) }
     scope :disabled, -> { where(enabled: false) }
