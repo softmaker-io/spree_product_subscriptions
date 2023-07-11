@@ -95,20 +95,20 @@ module Spree
 
     def pause
       run_callbacks :pause do
-        update_attribute(paused, true)
+        update(paused: true)
       end
     end
 
     def unpause
       run_callbacks :unpause do
-        update_attribute(paused, false)
+        update(paused: false)
       end
     end
 
     def cancel
       self.cancelled = true
       run_callbacks :cancel do
-        update_attribute(cancelled_at, Time.current)
+        update(cancelled_at: Time.current)
       end
     end
 
