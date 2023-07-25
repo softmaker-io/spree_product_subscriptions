@@ -1,18 +1,16 @@
 module Spree
-  module Admin
-    module UsersControllerDecorator
-      def self.prepended(base)
-        base.before_action :load_subscriptions, only: :show
-      end
+  module UsersControllerDecorator
+    def self.prepended(base)
+      base.before_action :load_subscriptions, only: :show
+    end
 
-      private
+    private
 
-      def load_subscriptions
-        @orders = @user.orders.complete.order(completed_at: :desc)
-        @subscriptions = Spree::Subscription.active.order(created_at: :desc).with_parent_orders(@orders)
-      end
+    def load_subscriptions
+      @orders = @user.orders.complete.order(completed_at: :desc)
+      @subscriptions = Spree::Subscription.active.order(created_at: :desc).with_parent_orders(@orders)
     end
   end
 end
 
-::Spree::Admin::UsersController.prepend(Spree::Admin::UsersControllerDecorator)
+::Spree::UsersController.prepend(Spree::UsersControllerDecorator)
