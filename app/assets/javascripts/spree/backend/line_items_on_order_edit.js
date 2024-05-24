@@ -1,76 +1,74 @@
-// This file contains the code for interacting with line items in the manual cart
-$(document).ready(function () {
-  'use strict';
+document.addEventListener("spree:load", function() {
+  console.log('spree:load event triggered');
 
-  // handle variant selection, show stock level.
-  $('#add_line_item_variant_id').change(function(){
-    var variant_id = $(this).val();
+  // Handle variant change
+  $('#add_line_item_variant_id').change(function () {
+    var variantId = $(this).val().toString();
 
-    var variant = _.find(window.variants, function(variant){
-      return variant.id == variant_id
-    })
-
-    $('#stock_details').html(variantLineItemTemplate({variant: variant}));
+    var variant = _.find(window.variants, function (variant) {
+      return variant.id.toString() == variantId;
+    });
+    $('#stock_details').html(variantLineItemTemplate({ variant: variant }));
     $('#stock_details').show();
-
     $('button.add_variant').click(addVariant);
 
-    //Function added for susbcription orders
-    disableSubscriptionFieldsOnOneTimeOrder(variant_id);
+    // Added for subscription orders
+    disableSubscriptionFieldsOnOneTimeOrder(variantId);
   });
 });
 
-addVariant = function() {
+function addVariant () {
   $('#stock_details').hide();
+  var variantId = $('select.variant_autocomplete').val();
+  var quantity = parseInt($('input#variant_quantity').val());
 
-  var variant_id = $('input.variant_autocomplete').val();
-  var quantity = $("input.quantity[data-variant-id='" + variant_id + "']").val();
-  // fields added for making subscription order.
-  var subscribe = $("input.subscribe[data-variant-id='" + variant_id + "']:checked").val();
-  var delivery_number = $("input.delivery_number[data-variant-id='" + variant_id + "']").val();
-  var frequency = $("select#frequency[data-variant-id='" + variant_id + "']").val();
+  // Added for subscription
+  var subscribe = $("input.subscribe[data-variant-id='" + variantId + "']:checked").val();
+  var deliveryNumber = $("input.delivery_number[data-variant-id='" + variantId + "']").val();
+  var frequency = $("select#frequency[data-variant-id='" + variantId + "']").val();
 
-  adjustLineItems(order_number, variant_id, quantity, subscribe, delivery_number, frequency);
-  return 1
+  adjustLineItems(order_id, variantId, quantity, subscribe, deliveryNumber, frequency);
+  return 1;
 }
 
-// function modified for subscription order fields
-adjustLineItems = function(order_number, variant_id, quantity, subscribe, delivery_number, frequency){
-  var url = Spree.routes.orders_api + "/" + order_number + '/line_items';
-
+// Changed for subscription
+function adjustLineItems(order_id, variant_id, quantity, subscribe, deliveryNumber, frequency) {
   $.ajax({
-    type: "POST",
-    url: Spree.url(url),
+    type: 'POST',
+    url: Spree.routes.line_items_api_v2,
     data: {
       line_item: {
+        order_id: order_id,
         variant_id: variant_id,
         quantity: quantity,
-        options: { subscribe: subscribe,
-          delivery_number: delivery_number,
+        options: {
+          subscribe: subscribe,
+          delivery_number: deliveryNumber,
           subscription_frequency_id: frequency
         }
-      },
-      token: Spree.api_key
-    }
-  }).done(function( msg ) {
+      }
+    },
+    headers: Spree.apiV2Authentication()
+  }).done(function () {
+
     window.Spree.advanceOrder();
     window.location.reload();
-  }).fail(function(msg) {
-    alert(msg.responseJSON.message)
-  });
+  }).fail(function (response) {
 
+    show_flash('error', response.responseJSON.error);
+  });
 }
 
-// Function added for subscription fields
-disableSubscriptionFieldsOnOneTimeOrder = function(variant_id) {
-  var delivery_number = $("input.delivery_number[data-variant-id='" + variant_id + "']");
+// Added for subscriptions
+function disableSubscriptionFieldsOnOneTimeOrder(variant_id) {
+  var deliveryNumber = $("input.delivery_number[data-variant-id='" + variant_id + "']");
   var frequency = $("select#frequency[data-variant-id='" + variant_id + "']");
   $("input.subscribe[data-variant-id='" + variant_id + "']").on("change", function() {
     if (!parseInt($(this).val())) {
-      delivery_number.attr("disabled", "disabled");
+      deliveryNumber.attr("disabled", "disabled");
       frequency.attr("disabled", "disabled");
     } else {
-      delivery_number.removeAttr("disabled");
+      deliveryNumber.removeAttr("disabled");
       frequency.removeAttr("disabled");
     }
   });
